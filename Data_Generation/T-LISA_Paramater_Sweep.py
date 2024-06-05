@@ -80,8 +80,10 @@ class ER_Graph():
             
                         
             #Flag model breakdown
-            if (self.gamma * len(suceptible_neighbors) + self.omega * len(adopted_neighbors))*(1/len(neighbors)) + (len(suceptible_neighbors) + len(adopted_neighbors))*(1/self.N) >= 1:
-                self.breakdown_conditon_flags.append(1)
+            #if (self.gamma * len(suceptible_neighbors) + self.omega * len(adopted_neighbors))*(1/len(neighbors)) + (len(suceptible_neighbors) + len(adopted_neighbors))*(1/self.N) >= 1:
+            #    self.breakdown_conditon_flags.append(1)
+            
+            
             
             #Define propensities
             #IN THIS VERSION OF CODE, ADOPTED NODES ARE FACTORED IN!
@@ -119,7 +121,6 @@ class ER_Graph():
         #re-initialize the graph, so states are all re-randomized.
         self.__init__(self.N, self.simulations, self.k, self.inital_conditions, self.r, self.gamma, self.omega)
         
-        
        #make sure solutions lists are empty
         self.L_solution = []
         self.I_solution = []
@@ -128,9 +129,6 @@ class ER_Graph():
         
        #Run the simulation:
         for simulation in range(self.simulations):
-            
-            if animate:
-                self.draw_graph()
             
             #Actuallly do the simulation, and print progress
             self.simulation_step()
@@ -151,15 +149,12 @@ class ER_Graph():
             A_nodes = [n for n,v in self.G.nodes(data=True) if v['state'] == 'A']
             self.A_solution.append(len(A_nodes))
             
-            if animate:
-                self.draw_graph()
-            
             if self.check_stable_state():
                 print(f"STABLE STATE REACHED at step {simulation + 1}")
                 break   
             
-    
-            
+            if animate:
+                self.draw_graph()
                 
     
     def run_n_simulations(self, data_path, final_graph_path,  n = 1, store_data = True):
@@ -188,7 +183,7 @@ class ER_Graph():
                 node_color=[color_state_map[node[1]['state']] for node in self.G.nodes(data=True)],
                 with_labels = with_labels, pos = pos)
         plt.title('graph')
-        #plt.show()
+        plt.show()
         
     def plot_curves(self):
         L_pop_fraction = [element / self.N for element in self.L_solution]
@@ -382,38 +377,31 @@ Graph1.run_n_simulations(data_path, n = 3, store_data=True)
 
 #%%SWEEEP! 
 #Sweep variables
-"""
-N_space = np.linspace(50, 200, num = 8, dtype=int)
+
+N_space = np.linspace(50, 600, num = 10, dtype=int)
 r_space = np.linspace(.5, 1, num = 5)
 gamma_space = np.linspace(.1, 1, num = 5)
 omega_space = np.linspace(.1, 1, num = 5)
-k_space = np.linspace(10, 30, num = 3)  """
+k_space = np.linspace(10, 30, num = 3)  
 
-N_space = [100]
-r_space = [.9]
-gamma_space = [.08]
-omega_space = [.08]
-k_space = [20] 
+
 
 
 #Constants
-simulations = 100
+simulations = 250
 inital_conditions = [0, .8, .2, 0]
-data_path = "/Users/markosuchy/Desktop/Honors Thesis/json data/Erdos_Renyi/Param_Sweep_Data/"
-final_graph_path = ""
-batch_size = 5
-
-
+data_path = "C:\\Users\\suchym24\\Desktop\\3_22_24\\Data\\"
+graph_obj_path = "C:\\Users\\suchym24\\Desktop\\3_22_24\\Final_Graphs\\"
+batch_size = 10
 
 #Parameter Space Setup
-'''
 N_space = np.linspace(50, 200, num = 8, dtype=int)
 r_space = np.linspace(.5, 1, num = 5)
 gamma_space = np.linspace(.1, 1, num = 5)
 omega_space = np.linspace(.1, 1, num = 5)
-k_space = np.linspace(10, 30, num = 3) '''
+k_space = np.linspace(10, 30, num = 3) 
 
- 
+
 output_csv = pd.DataFrame(columns = ("N", "r", "gamma", "omega", "k", "L_avg_err", "I_avg_err", "S_avg_err", "A_avg_err"))
 
 #Run the sweep!
@@ -435,11 +423,7 @@ for N in N_space:
                     
                     #RUN THE SIMULATION AND COMPARE STUFF!
                     er_graph = ER_Graph(N, simulations, k, inital_conditions, r, gamma, omega)
-                    er_graph.run_n_simulations(data_path, n=batch_size)
-                    
-                    #save final state
-                    final_state = json_graph.node_link_data(er_graph)
-
+                    er_graph.run_n_simulations(data_path, graph_obj_path, n=batch_size)
                     
                     
                     
@@ -519,40 +503,32 @@ for N in N_space:
 
 output_csv['avg_err'] = (abs(output_csv['L_avg_err']) + abs(output_csv["I_avg_err"]) + abs(output_csv["S_avg_err"]) + abs(output_csv["A_avg_err"])) / 4
 
-
+"""
 #plt.text(0, 100, str(comparison_df["params_x"][0]))
 #plt.show()
-#plt.savefig("/Users/markosuchy/Desktop/Honors Thesis/Figures and Visualizations/figures/MFT_VS_AGENT_2_20_24_2.png", dpi = 900)
+plt.savefig("/Users/markosuchy/Desktop/Honors Thesis/Figures and Visualizations/figures/MFT_VS_AGENT_2_20_24_2.png", dpi = 900)
                     
 #%%Make Plots with MFT and Stochastic runs
 
-
-
-simulations = 250
+simulations = 100
 inital_conditions = [0, .8, .2, 0]
-data_path = "/Users/markosuchy/Desktop/Honors Thesis/json data/Erdos_Renyi/3_22_24/Data/"
+data_path = "/Users/markosuchy/Desktop/Honors Thesis/json data/Erdos_Renyi/Param_Sweep_Data/"
 batch_size = 5
 
 #plot both of them on the same plot
-#batch_size = 2
+batch_size = 2
 
-N = 92
-r = 0.875
-gamma = 0.325
-omega = 0.325
-k = 20.0
+N = 100
+r = .9
+gamma = .12
+omega = .12
+k = 20
 
 #Run MFT for the same 
 MFT = Rescaled_MFT(N, simulations, k, inital_conditions, r, gamma, omega)
 MFT.solve_MFT()
 MFT.concat_data()
 MFT_df = MFT.df
-
-
-L_batch_avg_df = pd.DataFrame()
-I_batch_avg_df = pd.DataFrame()
-S_batch_avg_df = pd.DataFrame()
-A_batch_avg_df = pd.DataFrame()
 
 for batch in range(1, batch_size+1):
     params = {"N": N, 
@@ -568,15 +544,6 @@ for batch in range(1, batch_size+1):
     file_path = data_path + file_name
     er_graph_df = pd.read_json(file_path)
     
-    rows_to_add = 40 - len(er_graph_df)
-    if rows_to_add > 0:
-        row_to_duplicate = er_graph_df.iloc[len(er_graph_df) - 1: len(er_graph_df)]
-        duplicated_rows = pd.concat([row_to_duplicate]*rows_to_add, ignore_index=True)
-        er_graph_df = pd.concat([er_graph_df, duplicated_rows], ignore_index=True)
-        
-    er_graph_df["simulation"] = er_graph_df.index + 1
-
-        
     #Convet er graph solutions to population proportions
     
     er_graph_df["L_sol"] = er_graph_df["L_sol"] / N
@@ -586,7 +553,7 @@ for batch in range(1, batch_size+1):
 
     ##COMPUTE ERROR
     #Inner join er graph df and MFT df on Time/simulation
-    comparison_df = pd.merge(er_graph_df, MFT_df, how = "left", left_on=("simulation"), right_on=("T"))
+    comparison_df = pd.merge(er_graph_df, MFT_df, how = "inner", left_on=("simulation"), right_on=("T"))
     
     #calculate error
     comparison_df["L_difference"] = comparison_df["L_sol"] - comparison_df["L_sol_MFT"]
@@ -609,53 +576,9 @@ for batch in range(1, batch_size+1):
     font = {"size": 11}
     #plt.title(str(comparison_df["params_x"][0]["N"]) + str(comparison_df["params_x"][0]["simulations"]) + str(comparison_df["params_x"][0]["k"]) + str(comparison_df["params_x"][0]["inital_conditions"]) + str(comparison_df["params_x"][0]["r"]) + str(comparison_df["params_x"][0]["gamma"]) + str(comparison_df["params_x"][0]["omega"]), fontdict=font)
     #plt.text(str(comparison_df["params_x"][0]))
-    
-    #setup df for batch avg
-    L_batch_avg_df[f"L_sol_{batch}"] = er_graph_df["L_sol"]
-    I_batch_avg_df[f"I_sol_{batch}"] = er_graph_df["I_sol"]
-    S_batch_avg_df[f"S_sol_{batch}"] = er_graph_df["S_sol"]
-    A_batch_avg_df[f"A_sol_{batch}"] = er_graph_df["A_sol"]
-
 
 plt.plot(comparison_df["T"], comparison_df["L_sol_MFT"], color = "blue")
 plt.plot(comparison_df["T"], comparison_df["I_sol_MFT"], color = "green")
 plt.plot(comparison_df["T"], comparison_df["S_sol_MFT"], color = "orange")
-plt.plot(comparison_df["T"], comparison_df["A_sol_MFT"], color = "red")
-
-#Compute batch avgs (this only works proberly for batch size 5!)
-L_batch_avg_df['avg'] = L_batch_avg_df.mean(axis = 1)
-I_batch_avg_df['avg'] = I_batch_avg_df.mean(axis = 1)
-S_batch_avg_df['avg'] = S_batch_avg_df.mean(axis = 1)
-A_batch_avg_df['avg'] = A_batch_avg_df.mean(axis = 1)
-
-plt.plot(L_batch_avg_df.index + 1,  L_batch_avg_df['avg'], linestyle = "dashed", color = "blue", alpha = 0.6)
-plt.plot(I_batch_avg_df.index + 1,  I_batch_avg_df['avg'], linestyle = "dashed", color = "green", alpha = 0.6)
-plt.plot(S_batch_avg_df.index + 1,  S_batch_avg_df['avg'], linestyle = "dashed", color = "orange", alpha = 0.6)
-plt.plot(A_batch_avg_df.index + 1,  A_batch_avg_df['avg'], linestyle = "dashed", color = "red", alpha = 0.6)
-
-
-title = "T-LISA MC vs MFT: " + "N = " + str(N) + ", k = " + str(k) + ", $\gamma{}$ = " + str(round(gamma, 5)) + ", $\omega{}$ = " + str(round(omega, 5)) + " $r$ = " + str(r) 
-plt.title(title)
-
-plt.savefig("/Users/markosuchy/Desktop/Honors Thesis/Figures and Visualizations/figures/T-LISA_Stochastic_and_MFT/" + title + ".png", dpi = 900)
-
-#%%
-
-G = ER_Graph(50, 150, 30, [0, 0.8, 0.2, 0], 0.9, .08, .08)
-#plt.figure()
-#plt.savefig("/Users/markosuchy/Desktop/Honors Thesis/Figures and Visualizations/figures/N_50_init_graph.png", dpi= 900)
-
-G.run_one_simulation()
-
-G.draw_graph()
-plt.savefig("/Users/markosuchy/Desktop/Honors Thesis/Figures and Visualizations/figures/N_50_k=30_stable_graph.png", dpi= 900)
-
-
-
-plt.clf()
-G2 = ER_Graph(50, 150, 10, [0, 0.8, 0.2, 0], 0.9, .08, .08)
-G2.run_one_simulation()
-G2.draw_graph()
-plt.savefig("/Users/markosuchy/Desktop/Honors Thesis/Figures and Visualizations/figures/N_50_k=10_stable_graph.png", dpi= 900)
-
+plt.plot(comparison_df["T"], comparison_df["A_sol_MFT"], color = "red") """
         
