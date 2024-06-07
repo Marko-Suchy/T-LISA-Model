@@ -3,7 +3,10 @@ In this folder, you will find scripts which were used to analyze data generated 
 
 - **Run_Regessions.py**: This script runs OLS regressions to predict total average error by the independent variables $N$, $k$, $r$, $\gamma$, and $\omega$.
 - **Node_Level_Attribute_regression.py**: This script uses the ER_Graph() class to generate data locally for multiple simulations at one set point in paramater space. For each simulation run, node level metrics are computed and stored in a dataframe with the final state of the node. Finally, OLS and probit regressions are used to analyze the effects of (both non-normalized and normalized) node-level attributes on the final state of the of nodes.
+- **Node_level_metrics_non_ER.py**: This script creates a new class for simulating the T-LISA model called Non_ER_Simulation() which takes a pre-set graph object G. It runs the T-LISA model on G, generating local data, and runs regressions similar to the `Node_Level_Attribute_regression.py` script. 
+-
+-
+- Currently, this script is setup with Zachary's karate club, but any network object could be put into it. 
 - **Make_Box_Plots.py**
 - **Plot_Stochastic_T-LISA_Sims.py**:
 - **Join_Structural_and_run_data.py**:
-- ... There's probably others too?
