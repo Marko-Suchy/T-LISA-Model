@@ -3,9 +3,9 @@ Here, you will find python files for data generation and analysis, associated wi
 
 **Utilized packages:**
 - pandas
-- matplotlib=
+- matplotlib
 - statsmodels
-- NetworkX
+- networkx
 - scipy
 - numpy
 - random
